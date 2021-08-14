@@ -1,15 +1,16 @@
 import { ref } from 'vue'
 import { github, idb } from '@/helpers'
-import { GithubOrg, GithubTeam, GithubUser } from '@/types/githubTypes'
+import { GHInsightUser, GHInsightOrg, GHInsightTeam, GHInsightRepo } from '@/types/ghInsightTypes'
 
 // State
 const state = {
   working: ref<string>(),
-  user: ref<GithubUser>(),
-  org: ref<GithubOrg>(),
-  members: ref<GithubUser[]>([]),
-  publicMembers: ref<GithubUser[]>([]),
-  teams: ref<GithubTeam[]>([]),
+  user: ref<GHInsightUser>(),
+  org: ref<GHInsightOrg>(),
+  members: ref<GHInsightUser[]>([]),
+  publicMembers: ref<GHInsightUser[]>([]),
+  teams: ref<GHInsightTeam[]>([]),
+  repos: ref<GHInsightRepo[]>([]),
 }
 
 // Getters
@@ -18,43 +19,76 @@ const getters = {}
 // Actions
 const actions = {
   restore: async () => {
-    const [user, org, members, publicMembers, teams] = await idb.getMany([
+    const [user, org, members, teams, repos] = await idb.getMany([
       'gh_user',
       'gh_org',
       'gh_members',
-      'gh_publicMembers',
       'gh_teams',
+      'gh_repos',
     ])
-    if (!user) actions.fetchUser()
-    if (!org) actions.fetchOrg()
-    if (!members) actions.fetchMembers()
-    if (!publicMembers) actions.fetchPublicMembers()
-    if (!teams) actions.fetchTeams()
+    state.user.value = user ? user : await actions.fetchUser()
+    state.org.value = org ? org : await actions.fetchOrg()
+    state.members.value = members ? members : await actions.fetchMembers()
+    state.teams.value = teams ? teams : await actions.fetchTeams()
+    state.repos.value = repos ? repos : await actions.fetchRepos()
   },
   fetchUser: async () => {
-    const result = await github.getMe()
-    state.user.value = result
+    const response = await github.getMe()
+    const result = {
+      avatar_url: response.avatar_url,
+      id: response.id,
+      login: response.login,
+      site_admin: response.site_admin,
+    }
     idb.set('gh_user', result)
+    return result
   },
   fetchOrg: async () => {
-    const result = await github.getOrg()
-    state.org.value = result
+    const response = await github.getOrg()
+    const result = {
+      avatar_url: response.avatar_url,
+      company: response.company,
+      description: response.description,
+      id: response.id,
+      login: response.login,
+      name: response.name,
+    }
     idb.set('gh_org', result)
+    return result
   },
   fetchMembers: async () => {
-    const result = await github.getOrgMembers()
-    state.members.value = result
+    const response = await github.getOrgMembers()
+    const result = response.map((r) => ({
+      avatar_url: r.avatar_url,
+      id: r.id,
+      login: r.login,
+      site_admin: r.site_admin,
+    }))
     idb.set('gh_members', result)
-  },
-  fetchPublicMembers: async () => {
-    const result = await github.getOrgPublicMembers()
-    state.publicMembers.value = result
-    idb.set('gh_publicMembers', result)
+    return result
   },
   fetchTeams: async () => {
-    const result = await github.getOrgTeams()
-    state.teams.value = result
+    const response = await github.getOrgTeams()
+    const result = response.map((r) => ({
+      id: r.id,
+      name: r.name,
+      slug: r.slug,
+      description: r.description,
+      parent: r.parent?.id || null,
+    }))
     idb.set('gh_teams', result)
+    return result
+  },
+  fetchRepos: async () => {
+    const response = await github.getOrgRepos()
+    const result = response.map((r) => ({
+      id: r.id,
+      name: r.name,
+      description: r.description,
+      archived: r.archived,
+    }))
+    idb.set('gh_repos', result)
+    return result
   },
 }
 

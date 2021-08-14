@@ -1,9 +1,9 @@
-import { GithubOrg, GithubRateLimit, GithubTeam, GithubUser, GithubUserOrg } from '@/types/githubTypes'
+import { GithubOrg, GithubRateLimit, GithubTeam, GithubUser, GithubUserOrg, GithubRepo } from '@/types/githubTypes'
 
 let _auth: string | undefined = undefined
 let _org: string | undefined = undefined
 const _base = `https://api.github.com`
-const _maxCycles = 3
+const _maxCycles = 20
 
 // Methods
 const genUrl = (url: string, params?: Record<string, any>) => {
@@ -16,7 +16,6 @@ const goFetch = async (url: string, params?: Record<string, any>) => {
   try {
     const response = await fetch(genUrl(url, params), genOptions())
     const ok = response.ok
-    console.log('response', response)
     const data = await response.json()
     if (!ok) throw new Error(data.message)
     if (!data) throw new Error('No data returned')
@@ -32,7 +31,7 @@ const cycleFetch = async (url: string, params: Record<string, any> = {}) => {
     params.page = i
     const temp = await goFetch(url, params)
     result = [...result, ...temp]
-    if (result.length < params._per_page) j++
+    if (result.length <= params._per_page) j++
   }
   return result
 }
@@ -50,8 +49,8 @@ export const getUser = async (user?: string) => (await goFetch(`/users/${user}`)
 // Orgs
 export const getOrg = async () => (await goFetch(`/orgs/${_org}`)) as GithubOrg
 export const getOrgMembers = async () => (await cycleFetch(`/orgs/${_org}/members`)) as GithubUser[]
-export const getOrgPublicMembers = async () => (await cycleFetch(`/orgs/${_org}/public_members`)) as GithubUser[]
 export const getOrgTeams = async () => (await cycleFetch(`/orgs/${_org}/teams`)) as GithubTeam[]
+export const getOrgRepos = async () => (await cycleFetch(`/orgs/${_org}/repos`, {sort:'pushed'})) as GithubRepo[]
 // Repos
 
 // Pulls
