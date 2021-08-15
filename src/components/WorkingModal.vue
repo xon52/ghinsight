@@ -1,25 +1,11 @@
 <template>
-  <Dialog
-    :visible="true"
-    class="m-2 text-center w-30rem"
-    :draggable="false"
-    :closable="false"
-    modal
-    :header="`${working}...`"
-  >
-    <ProgressSpinner />
-  </Dialog>
+  <page-modal :show="!!working" :title="`${working}...`">
+    <n-spin size="large" />
+  </page-modal>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { PageModal } from '@/utils'
 import { githubStore } from '@/stores'
-
-export default defineComponent({
-  name: 'WorkingModal',
-  setup() {
-    const working = githubStore.working
-    return { working }
-  },
-})
+const working = githubStore.working
 </script>

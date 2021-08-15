@@ -3,14 +3,8 @@
   <working-modal v-if="isWorking" />
   <!-- Content -->
   <div v-else>
-    <Toolbar class="py-0">
-      <template #left>
-        <user-panel />
-      </template>
-      <template #right>
-        <org-panel />
-      </template>
-    </Toolbar>
+    <user-panel />
+    <org-panel />
     <member-panel />
     <teams-panel />
     <repo-panel />

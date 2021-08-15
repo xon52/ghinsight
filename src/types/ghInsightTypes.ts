@@ -25,4 +25,5 @@ export type GHInsightRepo = {
   name: string
   description: string
   archived: boolean
+  updated_at: string
 }

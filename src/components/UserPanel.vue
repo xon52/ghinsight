@@ -1,15 +1,10 @@
 <template>
-  <Chip v-if="user" v-tooltip.right="`ID: ${user.id}${user.admin?'\nAdmin':''}`" :image="user.avatar_url" :label="user.login" />
+  <h1>User</h1>
+  <pre>{{ JSON.stringify(user, null, 2) }}</pre>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import { githubStore } from '@/stores'
 
-export default defineComponent({
-  setup() {
-    const user = githubStore.user
-    return { user }
-  },
-})
+const user = githubStore.user
 </script>

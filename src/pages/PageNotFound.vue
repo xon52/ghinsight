@@ -1,21 +1,14 @@
 <template>
-  <Dialog :visible="true" class="m-2 w-30rem" :draggable="false" :closable="false" modal header="Page not found">
+  <page-modal :show="true" title="Page not found">
     <p>🤔 Can't find that page.</p>
     <p>Your options are <a href="#" @click="goBack">go back</a> or <a href="#" @click="goHome">go home</a>.</p>
-  </Dialog>
+  </page-modal>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { PageModal } from '@/utils'
 import { useRouter } from 'vue-router'
-
-export default defineComponent({
-  name: 'PageNotFound',
-  setup() {
-    const router = useRouter()
-    const goHome = () => router.push('/')
-    const goBack = () => router.back()
-    return { goHome, goBack }
-  },
-})
+const router = useRouter()
+const goHome = () => router.push('/')
+const goBack = () => router.back()
 </script>

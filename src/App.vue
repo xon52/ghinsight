@@ -1,17 +1,20 @@
 <template>
-  <ProgressSpinner v-if="isLoading" />
-  <router-view v-else />
+  <div style="height: 100vh; width: 100vw">
+    <n-message-provider>
+      <router-view />
+    </n-message-provider>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed, watch, onMounted } from 'vue'
 import { sessionStore } from '@/stores'
 import { useRouter } from 'vue-router'
-import WorkingModal from './components/WorkingModal.vue'
+import { NMessageProvider } from 'naive-ui'
 
 export default defineComponent({
-  components: { WorkingModal },
   name: 'App',
+  components: { NMessageProvider },
   setup() {
     const router = useRouter()
     const currentPage = ref(router.currentRoute)

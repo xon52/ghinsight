@@ -1,21 +1,14 @@
 <template>
-  <Dialog :visible="true" class="m-2 w-30rem" :draggable="false" :closable="false" modal :header="`${code} Error`">
+  <page-modal :show="true" :title="`${code} Error`">
     <p>😮 You found an error!</p>
     <p>Best <a href="#" @click="goHome">go home</a>.</p>
-  </Dialog>
+  </page-modal>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { PageModal } from '@/utils'
 import { useRouter } from 'vue-router'
-
-export default defineComponent({
-  name: 'PageError',
-  setup() {
-    const router = useRouter()
-    const code = router.currentRoute.value.params.code
-    const goHome = () => router.push('/')
-    return { goHome, code }
-  },
-})
+const router = useRouter()
+const code = router.currentRoute.value.params.code
+const goHome = () => router.push('/')
 </script>

@@ -1,15 +1,10 @@
 <template>
-  <Avatar v-if="org" v-tooltip.left="org.name || org.login" :image="org.avatar_url" size="xlarge" />
+  <h1>Org</h1>
+  <pre>{{ JSON.stringify(org, null, 2) }}</pre>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import { githubStore } from '@/stores'
 
-export default defineComponent({
-  setup() {
-    const org = githubStore.org
-    return { org }
-  },
-})
+const org = githubStore.org
 </script>

@@ -35,7 +35,6 @@ const actions = {
   fetchUser: async () => {
     const response = await github.getMe()
     const result = {
-      avatar_url: response.avatar_url,
       id: response.id,
       login: response.login,
       site_admin: response.site_admin,
@@ -46,7 +45,6 @@ const actions = {
   fetchOrg: async () => {
     const response = await github.getOrg()
     const result = {
-      avatar_url: response.avatar_url,
       company: response.company,
       description: response.description,
       id: response.id,
@@ -59,7 +57,6 @@ const actions = {
   fetchMembers: async () => {
     const response = await github.getOrgMembers()
     const result = response.map((r) => ({
-      avatar_url: r.avatar_url,
       id: r.id,
       login: r.login,
       site_admin: r.site_admin,
@@ -86,6 +83,7 @@ const actions = {
       name: r.name,
       description: r.description,
       archived: r.archived,
+      updated_at: r.updated_at,
     }))
     idb.set('gh_repos', result)
     return result
