@@ -1,0 +1,6 @@
+export { default as svgMaximize } from './window-maximize-solid.svg?component'
+export { default as svgMinimize } from './window-minimize-solid.svg?component'
+export { default as svgMinus } from './minus-solid.svg?component'
+export { default as svgTimes } from './times-solid.svg?component'
+export { default as svgPlus } from './plus-solid.svg?component'
+export { default as svgCog } from './cog-solid.svg?component'

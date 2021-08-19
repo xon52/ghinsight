@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { github, idb } from '@/helpers'
+import { github, idb } from '@/utils/helpers'
 import { GHInsightUser, GHInsightOrg, GHInsightTeam, GHInsightRepo } from '@/types/ghInsightTypes'
 
 // State

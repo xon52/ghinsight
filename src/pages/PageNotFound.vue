@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { PageModal } from '@/utils'
+import { PageModal } from '@/components'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const goHome = () => router.push('/')

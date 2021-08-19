@@ -1,8 +1,6 @@
 <template>
-  <div style="height: 100vh; width: 100vw">
-    <n-message-provider>
-      <router-view />
-    </n-message-provider>
+  <div class="p-5">
+    <router-view />
   </div>
 </template>
 
@@ -10,11 +8,9 @@
 import { defineComponent, ref, computed, watch, onMounted } from 'vue'
 import { sessionStore } from '@/stores'
 import { useRouter } from 'vue-router'
-import { NMessageProvider } from 'naive-ui'
 
 export default defineComponent({
   name: 'App',
-  components: { NMessageProvider },
   setup() {
     const router = useRouter()
     const currentPage = ref(router.currentRoute)

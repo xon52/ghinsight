@@ -1,14 +1,14 @@
 <template>
-  <n-modal :show="_show" :mask-closable="false">
-    <n-card style="width: 600px" :title="_title" size="huge">
+  <x-modal :open="_show" :mask-closable="false">
+    <x-card :title="_title">
       <slot></slot>
-    </n-card>
-  </n-modal>
+    </x-card>
+  </x-modal>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { NModal, NCard } from 'naive-ui'
+import { XModal, XCard } from '@/utils/components'
 
 const props = defineProps({
   show: Boolean,

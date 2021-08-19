@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import { info, wait } from '@/helpers'
+import { info, wait } from '@/utils/helpers'
 import { decrypt, encrypt } from './crypto'
 import { githubStore } from './github'
 
