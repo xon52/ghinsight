@@ -1,3 +1,4 @@
+import { GHInsightOrg, GHInsightRepo, GHInsightTeam, GHInsightUser } from '@/types/ghInsightTypes'
 import { GithubOrg, GithubRateLimit, GithubTeam, GithubUser, GithubUserOrg, GithubRepo } from '@/types/githubTypes'
 
 let _auth: string | undefined = undefined
@@ -24,13 +25,17 @@ const goFetch = async (url: string, params?: Record<string, any>) => {
     throw error
   }
 }
-const cycleFetch = async (url: string, params: Record<string, any> = {}) => {
+const cycleFetch = async <T, U>(
+  url: string,
+  params: Record<string, any> = {},
+  filter: (e: T) => U = (e: T) => e as unknown as U
+) => {
   if (!params.per_page) params.per_page = 100
-  let result: any[] = []
+  let result: U[] = []
   for (let i = 1, j = 0; i < _maxCycles && j < 1; i++) {
     params.page = i
-    const temp = await goFetch(url, params)
-    result = [...result, ...temp]
+    const temp: T[] = await goFetch(url, params)
+    result = [...result, ...temp.map(filter)]
     if (result.length <= params._per_page) j++
   }
   return result
@@ -44,13 +49,17 @@ export const setup = (auth: string, org: string) => {
 export const check = async () => (await goFetch(`/user/memberships/orgs`)) as GithubUserOrg[]
 export const rateLimit = async () => (await goFetch(`/rate_limit`)) as GithubRateLimit
 // Users
-export const getMe = async () => (await goFetch(`/user`)) as GithubUser
-export const getUser = async (user?: string) => (await goFetch(`/users/${user}`)) as GithubUser
+export const getMe = async (filter: (e: GithubUser) => GHInsightUser) => filter(await goFetch(`/user`))
+export const getUser = async (user: string, filter: (e: GithubUser) => GHInsightUser) =>
+  filter(await goFetch(`/users/${user}`))
 // Orgs
-export const getOrg = async () => (await goFetch(`/orgs/${_org}`)) as GithubOrg
-export const getOrgMembers = async () => (await cycleFetch(`/orgs/${_org}/members`)) as GithubUser[]
-export const getOrgTeams = async () => (await cycleFetch(`/orgs/${_org}/teams`)) as GithubTeam[]
-export const getOrgRepos = async () => (await cycleFetch(`/orgs/${_org}/repos`, {sort:'pushed'})) as GithubRepo[]
+export const getOrg = async (filter: (e: GithubOrg) => GHInsightOrg) => filter(await goFetch(`/orgs/${_org}`))
+export const getOrgMembers = async (filter: (e: GithubUser) => GHInsightUser) =>
+  await cycleFetch<GithubUser, GHInsightUser>(`/orgs/${_org}/members`, undefined, filter)
+export const getOrgTeams = async (filter: (e: GithubTeam) => GHInsightTeam) =>
+  await cycleFetch<GithubTeam, GHInsightTeam>(`/orgs/${_org}/teams`, undefined, filter)
+export const getOrgRepos = async (filter: (e: GithubRepo) => GHInsightRepo) =>
+  await cycleFetch<GithubRepo, GHInsightRepo>(`/orgs/${_org}/repos`, { sort: 'pushed' }, filter)
 // Repos
 
 // Pulls

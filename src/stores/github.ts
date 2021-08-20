@@ -1,16 +1,22 @@
 import { ref } from 'vue'
-import { github, idb } from '@/utils/helpers'
+import { idb } from '@/utils/helpers'
+import { github } from '@/scripts'
 import { GHInsightUser, GHInsightOrg, GHInsightTeam, GHInsightRepo } from '@/types/ghInsightTypes'
+import { GithubOrg, GithubUser } from '@/types/githubTypes'
 
 // State
 const state = {
   working: ref<string>(),
   user: ref<GHInsightUser>(),
+  userStatus: ref('No data'),
   org: ref<GHInsightOrg>(),
+  orgStatus: ref('No data'),
   members: ref<GHInsightUser[]>([]),
-  publicMembers: ref<GHInsightUser[]>([]),
+  membersStatus: ref('No data'),
   teams: ref<GHInsightTeam[]>([]),
+  teamsStatus: ref('No data'),
   repos: ref<GHInsightRepo[]>([]),
+  reposStatus: ref('No data'),
 }
 
 // Getters
@@ -33,60 +39,85 @@ const actions = {
     state.repos.value = repos ? repos : await actions.fetchRepos()
   },
   fetchUser: async () => {
-    const response = await github.getMe()
-    const result = {
-      id: response.id,
-      login: response.login,
-      site_admin: response.site_admin,
-    }
-    idb.set('gh_user', result)
-    return result
+    state.userStatus.value = 'Loading...'
+    return github
+      .getMe((r: GithubUser) => ({
+        id: r.id,
+        login: r.login,
+        site_admin: r.site_admin,
+      }))
+      .then((result) => {
+        state.userStatus.value = ''
+        idb.set('gh_user', result)
+        return result
+      })
+      .catch((e) => (state.userStatus.value = `ERROR :: ${e.message}`))
   },
   fetchOrg: async () => {
-    const response = await github.getOrg()
-    const result = {
-      company: response.company,
-      description: response.description,
-      id: response.id,
-      login: response.login,
-      name: response.name,
-    }
-    idb.set('gh_org', result)
-    return result
+    state.orgStatus.value = 'Loading...'
+    return github
+      .getOrg((r: GithubOrg) => ({
+        company: r.company,
+        description: r.description,
+        id: r.id,
+        login: r.login,
+        name: r.name,
+      }))
+      .then((result) => {
+        state.orgStatus.value = ''
+        idb.set('gh_org', result)
+        return result
+      })
+      .catch((e) => (state.orgStatus.value = `ERROR :: ${e.message}`))
   },
   fetchMembers: async () => {
-    const response = await github.getOrgMembers()
-    const result = response.map((r) => ({
-      id: r.id,
-      login: r.login,
-      site_admin: r.site_admin,
-    }))
-    idb.set('gh_members', result)
-    return result
+    state.membersStatus.value = 'Loading...'
+    return github
+      .getOrgMembers((r: GithubUser) => ({
+        id: r.id,
+        login: r.login,
+        site_admin: r.site_admin,
+      }))
+      .then((result) => {
+        state.membersStatus.value = ''
+        idb.set('gh_members', result)
+        return result
+      })
+      .catch((e) => (state.membersStatus.value = `ERROR :: ${e.message}`))
   },
   fetchTeams: async () => {
-    const response = await github.getOrgTeams()
-    const result = response.map((r) => ({
-      id: r.id,
-      name: r.name,
-      slug: r.slug,
-      description: r.description,
-      parent: r.parent?.id || null,
-    }))
-    idb.set('gh_teams', result)
-    return result
+    state.teamsStatus.value = 'Loading...'
+    return github
+      .getOrgTeams((r) => ({
+        id: r.id,
+        name: r.name,
+        slug: r.slug,
+        description: r.description,
+        parent: r.parent?.id || null,
+      }))
+      .then((result) => {
+        state.teamsStatus.value = ''
+        idb.set('gh_teams', result)
+        return result
+      })
+      .catch((e) => (state.teamsStatus.value = `ERROR :: ${e.message}`))
   },
   fetchRepos: async () => {
-    const response = await github.getOrgRepos()
-    const result = response.map((r) => ({
-      id: r.id,
-      name: r.name,
-      description: r.description,
-      archived: r.archived,
-      updated_at: r.updated_at,
-    }))
-    idb.set('gh_repos', result)
-    return result
+    state.reposStatus.value = 'Loading...'
+    return github
+      .getOrgRepos((r) => ({
+        id: r.id,
+        name: r.name,
+        description: r.description,
+        archived: r.archived,
+        updated_at: r.updated_at,
+      }))
+      .then((result) => {
+        state.reposStatus.value = ''
+        idb.set('gh_repos', result)
+        return result
+      })
+      .catch((e) => (state.reposStatus.value = `ERROR :: ${e.message}`))
   },
 }
 

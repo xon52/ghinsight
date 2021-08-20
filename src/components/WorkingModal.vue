@@ -1,11 +1,13 @@
 <template>
-  <page-modal :show="!!working" :title="`${working}...`">
-    <n-spin size="large" />
-  </page-modal>
+  <x-modal :open="!!working" class="min-w-60">
+    <x-card :title="`${working}...`">
+      <p>Working</p>
+    </x-card>
+  </x-modal>
 </template>
 
 <script setup lang="ts">
-import { PageModal } from '@/components'
+import { XModal, XCard } from '@/utils/components'
 import { githubStore } from '@/stores'
 const working = githubStore.working
 </script>

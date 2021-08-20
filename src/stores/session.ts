@@ -1,5 +1,6 @@
 import { ref } from 'vue'
-import { github, idb } from '@/utils/helpers'
+import { idb } from '@/utils/helpers'
+import {github} from '@/scripts'
 import { githubStore } from './'
 
 // State

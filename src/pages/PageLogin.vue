@@ -1,38 +1,40 @@
 <template>
-  <page-modal :show="true" title="Login to GH Insight">
-    <form :model="model" ref="formRef">
-      <!-- User -->
-      <label class="block mt-3">
-        <span class="text-gray-700">Github Username:</span>
-        <input v-model="model.user" type="text" class="block w-full mt-1" placeholder="" />
-      </label>
-      <!-- Org -->
-      <label class="block mt-3">
-        <span class="text-gray-700">Github Organisation:</span>
-        <input v-model="model.org" type="text" class="block w-full mt-1" placeholder="" />
-      </label>
-      <!-- PAT -->
-      <label class="block mt-3">
-        <span class="text-gray-700">Personal Access Token:</span>
-        <input v-model="model.pat" type="text" class="block w-full mt-1" placeholder="" />
-      </label>
-      <!-- Remember -->
-      <label class="flex mt-3 align-middle">
-        <span class="text-gray-700">Remember details:</span>
-        <input v-model="model.remember" type="checkbox" class="mt-1 ml-2" />
-      </label>
-      <hr class="my-5 opacity-25" />
-      <!-- Submit -->
-      <div class="flex justify-end">
-        <x-button @click="handleSubmit" :disabled="working" type="submit"> Start </x-button>
-      </div>
-    </form>
-  </page-modal>
+  <x-modal :open="true" >
+    <x-card title="Login to GH Insight" class="w-2/3 max-w-md">
+      <form :model="model" ref="formRef" @submit.prevent="handleSubmit">
+        <!-- User -->
+        <label class="block mt-3">
+          <span class="text-gray-700">Github Username:</span>
+          <input v-model="model.user" type="text" class="block w-full mt-1" placeholder="" />
+        </label>
+        <!-- Org -->
+        <label class="block mt-3">
+          <span class="text-gray-700">Github Organisation:</span>
+          <input v-model="model.org" type="text" class="block w-full mt-1" placeholder="" />
+        </label>
+        <!-- PAT -->
+        <label class="block mt-3">
+          <span class="text-gray-700">Personal Access Token:</span>
+          <input v-model="model.pat" type="text" class="block w-full mt-1" placeholder="" />
+        </label>
+        <!-- Remember -->
+        <label class="flex mt-3 align-middle">
+          <span class="text-gray-700">Remember details:</span>
+          <input v-model="model.remember" type="checkbox" class="mt-1 ml-2" />
+        </label>
+        <hr class="my-5 opacity-25" />
+        <!-- Submit -->
+        <div class="flex justify-end">
+          <x-button :disabled="working" type="submit"> Start </x-button>
+        </div>
+      </form>
+    </x-card>
+  </x-modal>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { PageModal } from '@/components'
+import { XModal, XCard } from '@/utils/components'
 import { XButton } from '@/utils/components'
 import { useRouter } from 'vue-router'
 import { sessionStore } from '@/stores'
