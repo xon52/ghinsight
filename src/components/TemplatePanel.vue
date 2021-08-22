@@ -1,20 +1,23 @@
 <template>
   <x-card class="cursor-pointer group" @click="handleClick">
-    <div class="flex justify-start align-middle">
-      <x-avatar v-if="img" :src="img" />
-      <div class="my-auto ml-6 text-3xl">
+    <div class="flex flex-col justify-start align-middle">
+      <x-avatar v-if="img" :src="img" sm />
+      <div class="my-auto ml-6 text-2xl">
         <span>
           {{ text }}
           <a
             v-if="url"
             @click.stop
-            class="hidden p-2 no-underline group-hover:inline-block hover:ring-1 ring-blue-300"
+            class="hidden p-1 no-underline group-hover:inline-block hover:ring-1 ring-blue-300"
             :href="url"
             target="_blank"
           >
             🔗
           </a>
         </span>
+      </div>
+      <div class="block">
+        <slot></slot>
       </div>
     </div>
   </x-card>

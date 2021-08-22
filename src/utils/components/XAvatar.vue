@@ -1,7 +1,13 @@
 <template>
-  <div class="relative -space-x-10">
+  <div :class="`relative ${sm ? '-space-x-6' : lg ? '-space-x-24' : '-space-x-10'}`">
     <template v-for="(s, i) in srcs" :key="i">
-      <img class="relative inline rounded-full" :class="size" :src="s" @click="$emit('click', $event)" :alt="alt" />
+      <img
+        class="relative inline border border-gray-300 border-solid rounded-full shadow"
+        :class="size"
+        :src="s"
+        @click="$emit('click', $event)"
+        :alt="alt"
+      />
     </template>
   </div>
 </template>
@@ -16,7 +22,7 @@ const props = defineProps({
   lg: { type: Boolean, default: false },
 })
 const size = computed(() => {
-  if (props.sm) return 'w-10'
+  if (props.sm) return 'w-12'
   if (props.lg) return 'w-40'
   return 'w-20'
 })

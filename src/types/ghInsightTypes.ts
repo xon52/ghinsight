@@ -1,7 +1,6 @@
 export type GHInsightUser = {
   login: string
   id: number
-  site_admin: boolean
 }
 
 export type GHInsightOrg = {
@@ -16,8 +15,8 @@ export type GHInsightTeam = {
   id: number
   name: string
   slug: string
-  description: string
-  parent: null | number
+  description?: string
+  parent?: GHInsightTeam
 }
 
 export type GHInsightRepo = {
@@ -26,4 +25,24 @@ export type GHInsightRepo = {
   description: string
   archived: boolean
   updated_at: string
+  language: string
+}
+
+export type GHInsightPull = {
+  url: string
+  id: number
+  number: number
+  state: string
+  locked: boolean
+  title: string
+  user: GHInsightUser
+  body: string
+  created_at: string
+  updated_at: string
+  closed_at: string
+  merged_at: string
+  requested_reviewers: GHInsightUser[]
+  requested_teams: GHInsightTeam[]
+  draft: boolean
+  repo: string
 }

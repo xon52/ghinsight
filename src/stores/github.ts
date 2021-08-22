@@ -1,8 +1,7 @@
 import { ref } from 'vue'
 import { idb } from '@/utils/helpers'
 import { github } from '@/scripts'
-import { GHInsightUser, GHInsightOrg, GHInsightTeam, GHInsightRepo } from '@/types/ghInsightTypes'
-import { GithubOrg, GithubUser } from '@/types/githubTypes'
+import { GHInsightUser, GHInsightOrg, GHInsightTeam, GHInsightRepo, GHInsightPull } from '@/types/ghInsightTypes'
 
 // State
 const state = {
@@ -17,6 +16,10 @@ const state = {
   teamsStatus: ref('No data'),
   repos: ref<GHInsightRepo[]>([]),
   reposStatus: ref('No data'),
+  pulls: ref<Record<string, GHInsightPull[]>>({}),
+  pullsStatus: ref('No data'),
+  codeOwners: ref<Record<string, string[]>>({}),
+  codeOwnersStatus: ref('No data'),
 }
 
 // Getters
@@ -32,21 +35,23 @@ const actions = {
       'gh_teams',
       'gh_repos',
     ])
-    state.user.value = user ? user : await actions.fetchUser()
-    state.org.value = org ? org : await actions.fetchOrg()
-    state.members.value = members ? members : await actions.fetchMembers()
-    state.teams.value = teams ? teams : await actions.fetchTeams()
-    state.repos.value = repos ? repos : await actions.fetchRepos()
+    if (user) state.user.value = user
+    else actions.fetchUser()
+    if (org) state.org.value = org
+    else actions.fetchOrg()
+    if (members) state.members.value = members
+    else actions.fetchMembers()
+    if (teams) state.teams.value = teams
+    else actions.fetchTeams()
+    if (repos) state.repos.value = repos
+    else actions.fetchRepos()
   },
   fetchUser: async () => {
     state.userStatus.value = 'Loading...'
     return github
-      .getMe((r: GithubUser) => ({
-        id: r.id,
-        login: r.login,
-        site_admin: r.site_admin,
-      }))
+      .getMe()
       .then((result) => {
+        state.user.value = result
         state.userStatus.value = ''
         idb.set('gh_user', result)
         return result
@@ -56,14 +61,9 @@ const actions = {
   fetchOrg: async () => {
     state.orgStatus.value = 'Loading...'
     return github
-      .getOrg((r: GithubOrg) => ({
-        company: r.company,
-        description: r.description,
-        id: r.id,
-        login: r.login,
-        name: r.name,
-      }))
+      .getOrg()
       .then((result) => {
+        state.org.value = result
         state.orgStatus.value = ''
         idb.set('gh_org', result)
         return result
@@ -73,12 +73,9 @@ const actions = {
   fetchMembers: async () => {
     state.membersStatus.value = 'Loading...'
     return github
-      .getOrgMembers((r: GithubUser) => ({
-        id: r.id,
-        login: r.login,
-        site_admin: r.site_admin,
-      }))
+      .getMembers((s) => (state.membersStatus.value = s))
       .then((result) => {
+        state.members.value = result
         state.membersStatus.value = ''
         idb.set('gh_members', result)
         return result
@@ -88,14 +85,9 @@ const actions = {
   fetchTeams: async () => {
     state.teamsStatus.value = 'Loading...'
     return github
-      .getOrgTeams((r) => ({
-        id: r.id,
-        name: r.name,
-        slug: r.slug,
-        description: r.description,
-        parent: r.parent?.id || null,
-      }))
+      .getTeams((s) => (state.teamsStatus.value = s))
       .then((result) => {
+        state.teams.value = result
         state.teamsStatus.value = ''
         idb.set('gh_teams', result)
         return result
@@ -105,19 +97,38 @@ const actions = {
   fetchRepos: async () => {
     state.reposStatus.value = 'Loading...'
     return github
-      .getOrgRepos((r) => ({
-        id: r.id,
-        name: r.name,
-        description: r.description,
-        archived: r.archived,
-        updated_at: r.updated_at,
-      }))
+      .getRepos((s) => (state.reposStatus.value = s))
       .then((result) => {
+        state.repos.value = result
         state.reposStatus.value = ''
         idb.set('gh_repos', result)
         return result
       })
       .catch((e) => (state.reposStatus.value = `ERROR :: ${e.message}`))
+  },
+  fetchPulls: async (repoName: string) => {
+    state.pullsStatus.value = 'Loading...'
+    return github
+      .getPulls(repoName, (s) => (state.pullsStatus.value = s))
+      .then((result) => {
+        state.pulls.value[repoName] = result
+        state.pullsStatus.value = ''
+        idb.set('gh_pulls', state.pulls)
+        return result
+      })
+      .catch((e) => (state.pullsStatus.value = `ERROR :: ${e.message}`))
+  },
+  fetchCodeOwners: async (repoName: string) => {
+    state.codeOwnersStatus.value = 'Loading...'
+    return github
+      .getCodeOwners(repoName, (s) => (state.codeOwnersStatus.value = s))
+      .then((result) => {
+        state.codeOwners.value[repoName] = result
+        state.codeOwnersStatus.value = ''
+        // idb.set('gh_codeOwners', state.codeOwners.value)
+        return result
+      })
+      .catch((e) => (state.codeOwnersStatus.value = `ERROR :: ${e.message}`))
   },
 }
 

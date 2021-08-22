@@ -6,9 +6,10 @@
     <teams-panel />
     <member-panel />
     <repo-panel />
+    <actions-panel />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { UserPanel, OrgPanel, MemberPanel, TeamsPanel, RepoPanel } from '@/components'
+import { UserPanel, OrgPanel, MemberPanel, TeamsPanel, RepoPanel, ActionsPanel } from '@/components'
 </script>
