@@ -18,8 +18,6 @@ const state = {
   reposStatus: ref('No data'),
   pulls: ref<Record<string, GHInsightPull[]>>({}),
   pullsStatus: ref('No data'),
-  codeOwners: ref<Record<string, string[]>>({}),
-  codeOwnersStatus: ref('No data'),
 }
 
 // Getters
@@ -106,30 +104,20 @@ const actions = {
       })
       .catch((e) => (state.reposStatus.value = `ERROR :: ${e.message}`))
   },
-  fetchPulls: async (repoName: string) => {
-    state.pullsStatus.value = 'Loading...'
-    return github
-      .getPulls(repoName, (s) => (state.pullsStatus.value = s))
-      .then((result) => {
-        state.pulls.value[repoName] = result
-        state.pullsStatus.value = ''
-        idb.set('gh_pulls', state.pulls)
-        return result
-      })
-      .catch((e) => (state.pullsStatus.value = `ERROR :: ${e.message}`))
-  },
-  fetchCodeOwners: async (repoName: string) => {
-    state.codeOwnersStatus.value = 'Loading...'
-    return github
-      .getCodeOwners(repoName, (s) => (state.codeOwnersStatus.value = s))
-      .then((result) => {
-        state.codeOwners.value[repoName] = result
-        state.codeOwnersStatus.value = ''
-        // idb.set('gh_codeOwners', state.codeOwners.value)
-        return result
-      })
-      .catch((e) => (state.codeOwnersStatus.value = `ERROR :: ${e.message}`))
-  },
+  // fetchPulls: async (repoName: string) => {
+  //   state.pullsStatus.value = 'Loading...'
+  //   return github
+  //     .getPulls(repoName, (s) => (state.pullsStatus.value = s))
+  //     .then((result) => {
+  //       state.pulls.value[repoName] = result
+  //       state.pullsStatus.value = ''
+  //       idb.set('gh_pulls', state.pulls)
+  //       return result
+  //     })
+  //     .catch((e) => (state.pullsStatus.value = `ERROR :: ${e.message}`))
+  // },
+  fetchCodeOwners: async (repoName: string) => github.getCodeOwners(repoName).catch((e) => {}),
+  fetchBuildKite: async (repoName: string) => github.getBuildkite(repoName).catch((e) => {}),
 }
 
 export default { ...state, ...getters, ...actions }

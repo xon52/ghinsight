@@ -1,6 +1,6 @@
 <template>
   <x-card class="cursor-pointer group" @click="handleClick">
-    <div class="flex flex-col justify-start align-middle">
+    <div class="flex justify-start align-middle">
       <x-avatar v-if="img" :src="img" sm />
       <div class="my-auto ml-6 text-2xl">
         <span>
@@ -16,10 +16,10 @@
           </a>
         </span>
       </div>
-      <div class="block">
-        <slot></slot>
-      </div>
     </div>
+    <template #footer>
+      <slot></slot>
+    </template>
   </x-card>
 </template>
 

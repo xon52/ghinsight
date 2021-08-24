@@ -4,6 +4,9 @@
     <x-button @click="handleCodeOwnersClick" :disabled="working || Object.keys(repos).length < 1">
       Get CodeOwners
     </x-button>
+    <x-button @click="handleBuildkiteClick" :disabled="working || Object.keys(repos).length < 1">
+      Check has .buildkite
+    </x-button>
     <x-button @click="handleExport" :disabled="working || Object.keys(repos).length < 1">Export</x-button>
   </template-panel>
 </template>
@@ -21,13 +24,13 @@ type ExportType = {
   language: string
   updated_at: string
   teams: string[]
+  hasBuildkite: boolean
 }
 
 const working = ref(false)
 const repos: Ref<Record<string, ExportType>> = ref({})
 
 const handleReposClick = async () => {
-  const oldDate = new Date(new Date().setFullYear(new Date().getFullYear() - 2))
   githubStore.repos.value
     .filter((r) => {
       if (r.archived) return false
@@ -39,6 +42,7 @@ const handleReposClick = async () => {
         language: r.language,
         updated_at: r.updated_at,
         teams: [],
+        hasBuildkite: false,
       }
     })
 }
@@ -60,12 +64,30 @@ const handleCodeOwnersClick = async () => {
   working.value = false
 }
 
+const handleBuildkiteClick = async () => {
+  working.value = true
+  for (const k in repos.value) {
+    const r = repos.value[k]
+    githubStore
+      .fetchBuildKite(r.name)
+      .then((result) => {
+        console.log(`${r.name} hasBuildKite`, !!result)
+        r.hasBuildkite = !!result
+      })
+      .catch(() => {})
+  }
+  working.value = false
+}
+
 const handleExport = async () => {
   working.value = true
   const result = Object.values(repos.value).map(
-    (e) => `${e.name},${e.language},${new Date(e.updated_at).toLocaleDateString('en-AU')},${e.teams.join('|')}`
+    (e) =>
+      `${e.name},${e.language},${new Date(e.updated_at).toLocaleDateString('en-AU')},${e.teams.join('|')}, ${
+        e.hasBuildkite
+      }`
   )
-  result.unshift('Name, Language, Updated, CodeOwners')
+  result.unshift('Name, Language, Updated, CodeOwners, Has .buildkite')
   // CSV maker
   const el = document.createElement('a')
   const csvContent = result.join(`\n`)

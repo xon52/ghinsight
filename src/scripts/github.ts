@@ -127,8 +127,11 @@ export const getRepos = async (status: StatusUpdate) =>
 export const getPulls = async (repo: string, status: StatusUpdate) =>
   await cycleFetch(`/repos/${_org}/${repo}/pulls`, { sort: 'updated' }, pullFilter, status)
 // CodeOwners
-export const getCodeOwners = async (repo: string, status: StatusUpdate) =>
-  await goFetch(`/repos/${_org}/${repo}/contents/.github/CODEOWNERS`, { sort: 'updated' })
+export const getCodeOwners = async (repo: string) =>
+  await goFetch(`/repos/${_org}/${repo}/contents/.github/CODEOWNERS`)
+// Buildkite
+export const getBuildkite = async (repo: string) =>
+  await goFetch(`/repos/${_org}/${repo}/contents/.buildkite`)
 
 // Pulls
 // https://github.com/octokit/plugin-rest-endpoint-methods.js/blob/master/src/generated/endpoints.ts#L854
