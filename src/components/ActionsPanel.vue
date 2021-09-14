@@ -83,7 +83,7 @@ const handleExport = async () => {
   working.value = true
   const result = Object.values(repos.value).map(
     (e) =>
-      `${e.name},${e.language},${new Date(e.updated_at).toLocaleDateString('en-AU')},${e.teams.join('|')}, ${
+      `${e.name},${e.language},${new Date(e.updated_at).toLocaleDateString()},${e.teams.join('|')}, ${
         e.hasBuildkite
       }`
   )
