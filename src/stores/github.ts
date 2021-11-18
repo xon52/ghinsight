@@ -25,6 +25,23 @@ const getters = {}
 
 // Actions
 const actions = {
+  refresh: async () => {
+    state.working.value = 'Refreshing'
+    await idb.setMany([
+      ['gh_user', undefined],
+      ['gh_org', undefined],
+      ['gh_members', undefined],
+      ['gh_teams', undefined],
+      ['gh_repos', undefined],
+    ])
+    state.user.value = undefined
+    state.org.value = undefined
+    state.members.value = []
+    state.teams.value = []
+    state.repos.value = []
+
+    await actions.restore()
+  },
   restore: async () => {
     const [user, org, members, teams, repos] = await idb.getMany([
       'gh_user',

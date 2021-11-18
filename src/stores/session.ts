@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { idb } from '@/utils/helpers'
-import {github} from '@/scripts'
+import { github } from '@/scripts'
 import { githubStore } from './'
 
 // State
@@ -31,7 +31,7 @@ const actions = {
       if (myOrg.user.login.toLocaleLowerCase() !== user.toLocaleLowerCase())
         throw new Error('Username does not match credentials')
     } catch (err) {
-      throw new Error(`LOGIN :: ${err.message}`)
+      throw new Error(`LOGIN :: ${(err as Error).message}`)
     }
     // Session creation
     state.user.value = user
